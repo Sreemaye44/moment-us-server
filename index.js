@@ -1,5 +1,6 @@
 const express= require('express');
 const cors= require('cors');
+const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
@@ -16,7 +17,6 @@ app.use(express.json())
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ewurel7.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -75,6 +75,7 @@ async function run(){
 
     app.post('/services', async(req,res)=>{
     const newService=req.body;
+    console.log(newService);
     newService.creationDate = new Date();
     const service=await serviceCollection.insertOne(newService);
     res.send(service);
@@ -98,6 +99,22 @@ app.delete('/myReview/:id',async(req,res)=>{
     
 
   });
+
+  app.put('/myReview/:id', async(req,res)=>{
+    const id= req.params.id;
+    console.log(id)
+    const filter={_id: ObjectId(id)};
+    const review= req.body;
+    const option= {upsert: true};
+    const updatedReview={
+        $set: {
+            message: review.message
+        }
+    }
+    const result= await reviewCollection.updateOne(filter, updatedReview, option);
+    res.send(result);
+
+})
 
 
 
