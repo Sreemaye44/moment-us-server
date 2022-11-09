@@ -58,7 +58,21 @@ async function run(){
         const review=await cursor.toArray();
         res.send(review);
       });
+      
+    app.get('/myReview', async(req,res)=>{
+    let query={};
+    if(req.query.email){
+        query=
+        {
+            email: req.query.email
+        }
+    }
+    const cursor=reviewCollection.find(query).sort({"creationDate":-1});
+        const review=await cursor.toArray();
+        res.send(review);
+      });
     
+
     app.post('/services', async(req,res)=>{
     const newService=req.body;
     newService.creationDate = new Date();
@@ -74,7 +88,17 @@ async function run(){
 
 });
 
-   
+app.delete('/myReview/:id',async(req,res)=>{
+    const id=req.params.id;
+    console.log(id);
+    const query={_id:ObjectId(id)};
+    //console.log(query,id);
+    const result=await reviewCollection.deleteOne(query);
+    res.send(result);
+    
+
+  });
+
 
 
    }
@@ -88,9 +112,9 @@ run().catch(err=>console.error(err))
 
 
 app.get('/',(req,res)=>{
-    res.send('genius car server is running')
+    res.send('server is running')
 })
 
 app.listen(port, ()=>{
-    console.log(`genius car server running on,${port}`)
+    console.log(`server running on,${port}`)
 })
