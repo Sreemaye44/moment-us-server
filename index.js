@@ -114,7 +114,13 @@ async function run(){
     res.send(service);
 
 });
-   
+    app.post('/review', async(req,res)=>{
+    const newReview=req.body;
+    newReview.creationDate = new Date();
+    const review=await reviewCollection.insertOne(newReview);
+    res.send(review);
+
+});
 
 app.delete('/myReview/:id',async(req,res)=>{
     const id=req.params.id;
